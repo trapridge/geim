@@ -1,15 +1,19 @@
-var getVector = function(spec) {
+// TODO: transition to THREE.Vector3 at some point
+
+var createVector = function(spec) {
   'use strict';
 
+  // INIT
   var defaults = { x: 0, y: 0, z: 0 };
   spec = spec || defaults;
-
   var vector = {};
-  (function init() {
-    vector.x = spec.x || defaults.x;
-    vector.y = spec.y || defaults.y;
-    vector.z = spec.z || defaults.z;
-  })();
+
+
+  // FIELDS
+  vector.x = spec.x || defaults.x;
+  vector.y = spec.y || defaults.y;
+  vector.z = spec.z || defaults.z;
+
 
   // METHODS
   vector.magnitude = function() {
@@ -35,9 +39,9 @@ var getVector = function(spec) {
   };
 
   vector.scale = function(scalar) {
-    vector.x * scalar;
-    vector.y * scalar;
-    vector.z * scalar;
+    vector.x *= scalar;
+    vector.y *= scalar;
+    vector.z *= scalar;
     return vector;
   };
 
@@ -71,24 +75,25 @@ var getVector = function(spec) {
     console.log('z', vector.z);
   };
 
-  vector.getNormalized = function() {
+  vector.createNormalized = function() {
     var magnitude = vector.magnitude();
-    return getVector({
+    return createVector({
       x: vector.x / magnitude,
       y: vector.y / magnitude,
       z: vector.z / magnitude
     });
   };
 
-  vector.getCrossProduct = function(otherVector) {
-    return getVector({
+  vector.createCrossProduct = function(otherVector) {
+    return createVector({
       x: vector.y * otherVector.z - vector.z * otherVector.y,
       y: vector.z * otherVector.x - vector.x * otherVector.z,
       z: vector.x * otherVector.y - vector.y * otherVector.x
     });
   };
 
+
   return vector;
 }
 
-module.exports = getVector;
+module.exports = createVector;

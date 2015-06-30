@@ -1,33 +1,35 @@
-var getPoint = require('./Point');
-var getVector = require('./Vector');
+var createPoint = require('./Point');
+var createVector = require('./Vector');
 
-var getCharacter = function (spec) {
+var createCharacter = function (spec) {
   'use strict';
 
+  // INIT
   var defaults = {
-    position: getPoint(),
-    movement: getVector(),
-    mesh: new THREE.Mesh(new THREE.BoxGeometry(50, 50, 50),
+    position: createPoint(),
+    movement: createVector(),
+    mesh: new THREE.Mesh(new THREE.BoxGeometry(50, 100, 50),
                          new THREE.MeshNormalMaterial()),
     health: 100,
     visible: true,
     rotating: false
   };
   spec = spec || defaults;
-
   var character = {};
-  (function init() {
-    character.position = spec.position || defaults.position;
-    character.movement = spec.movement || defaults.movement;
-    character.mesh = spec.mesh || defaults.mesh;
-    character.health = spec.health || defaults.health;
-    character.visible = spec.visible || defaults.visible;
-    character.rotating = spec.rotating || defaults.rotating;
-    updateMeshPosition(character.position, character.mesh);
-  })();
+
+
+  // FIELDS
+  character.position = spec.position || defaults.position;
+  character.movement = spec.movement || defaults.movement;
+  character.mesh = spec.mesh || defaults.mesh;
+  character.health = spec.health || defaults.health;
+  character.visible = spec.visible || defaults.visible;
+  character.rotating = spec.rotating || defaults.rotating;
+
 
   // METHODS
   character.update = function(delta) {
+    // move character
     updateMeshPosition(character.position.addVector(character.movement),
                        character.mesh);
 
@@ -44,6 +46,7 @@ var getCharacter = function (spec) {
     character.rotating = rotate;
   };
 
+
   // HELPERS
   function updateMeshPosition(point, mesh) {
     mesh.position.x = point.x;
@@ -51,7 +54,8 @@ var getCharacter = function (spec) {
     mesh.position.z = point.z;
   }
 
+
   return character;
 }
 
-module.exports = getCharacter;
+module.exports = createCharacter;

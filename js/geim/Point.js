@@ -1,18 +1,21 @@
-var getVector = require('./Vector');
+// TODO: consider using THREE.Vector3 at some point
 
-var getPoint = function(spec) {
+var createVector = require('./Vector');
+
+var createPoint = function(spec) {
   'use strict';
 
+  // INIT
   var defaults =  { x: 0, y: 0, z: 0 };
-
   spec = spec || defaults;
-
   var point = {};
-  (function init() {
-    point.x = spec.x || defaults.x;
-    point.y = spec.y || defaults.y;
-    point.z = spec.z || defaults.z;
-  })();
+
+
+  // FIELDS
+  point.x = spec.x || defaults.x;
+  point.y = spec.y || defaults.y;
+  point.z = spec.z || defaults.z;
+
 
   // METHODS
   point.addVector = function(vector) {
@@ -22,19 +25,34 @@ var getPoint = function(spec) {
     return point;
   };
 
-  point.getVectorToPoint = function(fromPoint) {
-    return getVector({
+  point.substractVector = function(vector) {
+    point.x -= vector.x;
+    point.y -= vector.y;
+    point.z -= vector.z;
+    return point;
+  };
+
+  point.createVectorToPoint = function(fromPoint) {
+    return createVector({
       x: point.x -= fromPoint.x,
       y: point.y -= fromPoint.y,
       z: point.z -= fromPoint.z
     });
   };
 
-  point.getVectorFromPoint = function(toPoint) {
-    return getVector({
+  point.createVectorFromPoint = function(toPoint) {
+    return createVector({
       x: toPoint.x -= point.x,
       y: toPoint.y -= point.y,
       z: toPoint.z -= point.z
+    });
+  };
+
+  point.clone = function() {
+    return createPoint({
+      x: point.x,
+      y: point.y,
+      z: point.z
     });
   };
 
@@ -44,7 +62,8 @@ var getPoint = function(spec) {
     console.log('z', point.z);
   };
 
+
   return point;
 }
 
-module.exports = getPoint;
+module.exports = createPoint;
