@@ -77,16 +77,15 @@ var createVector = function(spec) {
     console.log('z', vector.z);
   };
 
-  vector.createNormalized = function() {
+  vector.normalize = function() {
     var magnitude = vector.magnitude();
-    return createVector({
-      x: vector.x / magnitude,
-      y: vector.y / magnitude,
-      z: vector.z / magnitude
-    });
+    vector.x / magnitude;
+    vector.y / magnitude;
+    vector.z / magnitude;
+    return vector;
   };
 
-  vector.createCrossProduct = function(otherVector) {
+  vector.crossProductVector = function(otherVector) {
     return createVector({
       x: vector.y * otherVector.z - vector.z * otherVector.y,
       y: vector.z * otherVector.x - vector.x * otherVector.z,
@@ -94,6 +93,13 @@ var createVector = function(spec) {
     });
   };
 
+  vector.clone = function() {
+    return createVector({
+      x: vector.x,
+      y: vector.y,
+      z: vector.z
+    });
+  }
 
   return vector;
 }

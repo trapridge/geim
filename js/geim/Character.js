@@ -33,8 +33,7 @@ var createCharacter = function (spec) {
 
   // METHODS
   character.update = function(delta) {
-    // move character by adding to current position
-    character.movement = character.movementDirection;
+    // move character by adding the movement vector to current position
     character.position.addVector(character.movement.scale(character.velocity));
 
     // update mesh to new position

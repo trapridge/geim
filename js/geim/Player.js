@@ -28,17 +28,25 @@ var createPlayer = function (spec) {
   // METHODS
   var superUpdate = player.update;
   player.update = function(delta) {
+
+    // move player according to:
+    //   keyboard (movementDirection), and
+    //   mouse (viewAngle)
     var forwardVector = player.viewAngle.toVector();
     forwardVector.y = 0;
+
     var upVector = createVector({ x: 0, y: 1, z: 0 });
-    var rightVector = upVector.createCrossProduct(forwardVector);
+    var rightVector = upVector.crossProductVector(forwardVector);
 
-    var a = forwardVector.scale(player.movementDirection.x);
-    var b = rightVector.scale(player.movementDirection.z);
+    // TODO: scale movement by dT
 
-    //player.movement = a.addVector(b);
-    //var temp = forwardVector.scale(player.movementDirection.x).dotProduct(rightVector.scale(player.movementDirection.z));
-    //console.log(temp);
+    var a = forwardVector.normalize().scale(player.movementDirection.z);
+    var b = rightVector.normalize().scale(player.movementDirection.x);
+
+    player.movement = a.addVector(b);
+
+    // rotate player according to viewAngle
+    player.mesh.rotation.y = -player.viewAngle.yaw;
 
     superUpdate(delta);
   };

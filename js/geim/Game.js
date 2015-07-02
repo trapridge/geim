@@ -80,6 +80,8 @@ function init() {
   var grid = new THREE.Line( geometry, lineMaterial, THREE.LinePieces );
   scene.add(grid);
 
+  // TODO: add axis
+
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -99,6 +101,7 @@ function gameLoop() {
 
 function update(delta) {
   // position camera
+  // Separate game logic to its own file
   var v = player.viewAngle.toVector().scale(150);
   var p = player.position.clone();
   var i = p.addVector(v);
@@ -108,8 +111,8 @@ function update(delta) {
   camera.lookAt(player.mesh.position);
 
   // update nose
-  player.viewAngle.log();
-  var v = v.createNormalized().scale(100);
+  // TODO: move to Player and update position indirectly
+  var v = v.normalize().scale(500);
   v.y = 0;
   line.geometry.vertices[0].x = player.position.x;
   line.geometry.vertices[0].y = player.position.y;
@@ -133,8 +136,8 @@ function draw(delta) {
   renderer.render(scene, camera);
 }
 
-
-var mouseSensitivity = 0.01, lastX = 0, lastY = 0;
+// move to MouseHandler
+var mouseSensitivity = 0.02, lastX = 0, lastY = 0;
 document.addEventListener('mousemove', function(event) {
   if(lastX > 0 && lastY > 0 && mouseDown) {
     var movedX = event.screenX - lastX;
@@ -143,7 +146,7 @@ document.addEventListener('mousemove', function(event) {
     // update player's view angle
     player.viewAngle.pitch += movedY * mouseSensitivity;
     player.viewAngle.yaw += movedX * mouseSensitivity;
-    player.viewAngle.normalize();
+    player.viewAngle.restrict();
 
     //console.log('angles', player.viewAngle.pitch * (180/Math.PI), player.viewAngle.yaw * (180/Math.PI));
   }

@@ -26,12 +26,12 @@ var createEulerAngles = function(spec) {
     });
   };
 
-  eulerAngles.normalize = function() {
-    if(eulerAngles.pitch > Math.PI / 2 - 0.1) {
-      eulerAngles.pitch = Math.PI / 2 - 0.1;
+  eulerAngles.restrict = function() {
+    if(eulerAngles.pitch > Math.PI / 2/* - 0.1*/) {
+      eulerAngles.pitch = Math.PI / 2/* - 0.1*/;
     }
-    else if(eulerAngles.pitch < -Math.PI / 2 + 0.1) {
-      eulerAngles.pitch = -Math.PI / 2 + 0.1;
+    else if(eulerAngles.pitch < -Math.PI / 2/* + 0.1*/) {
+      eulerAngles.pitch = -Math.PI / 2/* + 0.1*/;
     }
 
     while(eulerAngles.yaw < -Math.PI) {
