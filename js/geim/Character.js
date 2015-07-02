@@ -7,12 +7,14 @@ var createCharacter = function (spec) {
   // INIT
   var defaults = {
     position: createPoint(),
+    movementDirection: createVector(),
     movement: createVector(),
     mesh: new THREE.Mesh(new THREE.BoxGeometry(50, 100, 50),
                          new THREE.MeshNormalMaterial()),
     health: 100,
     visible: true,
-    rotating: false
+    rotating: false,
+    velocity: 0 // units/ms
   };
   spec = spec || defaults;
   var character = {};
@@ -20,30 +22,27 @@ var createCharacter = function (spec) {
 
   // FIELDS
   character.position = spec.position || defaults.position;
+  character.movementDirection = spec.movementDirection || defaults.movementDirection;
   character.movement = spec.movement || defaults.movement;
   character.mesh = spec.mesh || defaults.mesh;
   character.health = spec.health || defaults.health;
   character.visible = spec.visible || defaults.visible;
   character.rotating = spec.rotating || defaults.rotating;
+  character.velocity = spec.velocity || defaults.velocity;
 
 
   // METHODS
   character.update = function(delta) {
-    // move character
-    updateMeshPosition(character.position.addVector(character.movement),
-                       character.mesh);
+    // move character by adding to current position
+    character.movement = character.movementDirection;
+    character.position.addVector(character.movement.scale(character.velocity));
 
-    if(character.rotating) {
-      character.mesh.rotation.y += 0.0225;
-    }
+    // update mesh to new position
+    updateMeshPosition(character.position, character.mesh);
   };
 
   character.draw = function(delta, renderer) {
     // mesh drawn as part of scene in Game.js
-  };
-
-  character.setRotate = function(rotate) {
-    character.rotating = rotate;
   };
 
 

@@ -21,17 +21,19 @@ var createVector = function(spec) {
   };
 
   vector.magnitudeSquared = function() {
-    return x * x + y * y + z * z;
+    return vector.x * vector.x +
+           vector.y * vector.y +
+           vector.z * vector.z;
   };
 
-  vector.addToVector = function(otherVector) {
+  vector.addVector = function(otherVector) {
     vector.x += otherVector.x,
     vector.y += otherVector.y,
     vector.z += otherVector.z
     return vector;
   };
 
-  vector.substractFromVector = function(otherVector) {
+  vector.substractVector = function(otherVector) {
     vector.x -= otherVector.x,
     vector.y -= otherVector.y,
     vector.z -= otherVector.z

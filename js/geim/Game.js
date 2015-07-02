@@ -1,11 +1,12 @@
 var createCharacter = require('./Character');
 var createPlayer = require('./Player');
+var createVector = require('./Vector');
 var createPoint = require('./Point');
 
 var player = createPlayer({
   position: createPoint({x: 0, y: 0, z: 0}),
   mesh: new THREE.Mesh(new THREE.BoxGeometry(50, 100, 50),
-                       new THREE.MeshNormalMaterial())
+                       new THREE.MeshBasicMaterial({ wireframe: true }))
 });
 
 var ramdomSeedSize = 400;
@@ -31,7 +32,7 @@ var characters = [
   })
 ];
 
-var container, camera, scene, renderer;
+var container, camera, scene, renderer, line;
 
 init();
 gameLoop();
@@ -48,6 +49,19 @@ function init() {
   characters.forEach(function(char) {
     scene.add(char.mesh);
   });
+
+  var material = new THREE.LineBasicMaterial({
+    color: 0x0000ff
+  });
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3(0, 25, 0),
+    new THREE.Vector3(0, 25, -50)
+  );
+  line = new THREE.Line( geometry, material );
+  line.frustumCulled = false;
+  scene.add( line );
 
   var lineMaterial = new THREE.LineBasicMaterial( { color: 0x303030 } ),
   geometry = new THREE.Geometry(),
@@ -84,19 +98,28 @@ function gameLoop() {
 }
 
 function update(delta) {
+  // position camera
   var v = player.viewAngle.toVector().scale(150);
-  //v.log();
   var p = player.position.clone();
-  //p.log();
   var i = p.addVector(v);
-  camera.position.z = i.z + 200;
+  camera.position.z = i.z + 100;
   camera.position.x = i.x;
   camera.position.y = i.y + 50;
-
-  //console.log(camera.position.x);
-
   camera.lookAt(player.mesh.position);
 
+  // update nose
+  player.viewAngle.log();
+  var v = v.createNormalized().scale(100);
+  v.y = 0;
+  line.geometry.vertices[0].x = player.position.x;
+  line.geometry.vertices[0].y = player.position.y;
+  line.geometry.vertices[0].z = player.position.z;
+  line.geometry.vertices[1].x = player.position.x - v.x;
+  line.geometry.vertices[1].y = player.position.y - v.y;
+  line.geometry.vertices[1].z = player.position.z - v.z;
+  line.geometry.verticesNeedUpdate = true;
+
+  // update characters
   characters.forEach(function(char) {
     char.update(delta);
   });
@@ -113,22 +136,26 @@ function draw(delta) {
 
 var mouseSensitivity = 0.01, lastX = 0, lastY = 0;
 document.addEventListener('mousemove', function(event) {
-  if(lastX > 0 && lastY > 0) {
+  if(lastX > 0 && lastY > 0 && mouseDown) {
     var movedX = event.screenX - lastX;
     var movedY = event.screenY - lastY;
 
-    //player.mesh.rotation.x += movedX * mouseSensitivity;
-
-    //camera.position.y -= movedY;
-    //camera.lookAt(player.mesh.position);
-    //player.mesh.rotation.y -= movedX * mouseSensitivity;
-
+    // update player's view angle
     player.viewAngle.pitch += movedY * mouseSensitivity;
     player.viewAngle.yaw += movedX * mouseSensitivity;
+    player.viewAngle.normalize();
 
-
-    console.log('angles', player.viewAngle.pitch * (180/Math.PI), player.viewAngle.yaw * (180/Math.PI));
+    //console.log('angles', player.viewAngle.pitch * (180/Math.PI), player.viewAngle.yaw * (180/Math.PI));
   }
   lastX = event.screenX;
   lastY = event.screenY;
+}, false);
+
+var mouseDown = false;
+document.addEventListener('mousedown', function(event) {
+  mouseDown = true;
+}, false);
+
+document.addEventListener('mouseup', function(event) {
+  mouseDown = false;
 }, false);
