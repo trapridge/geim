@@ -2,6 +2,7 @@ var createVector = require('./Vector');
 var createCharacter = require('./Character');
 var createEulerAngles = require('./EulerAngles');
 var playerKeyHandler = require('./KeyHandler');
+var playerMouseHandler = require('./MouseHandler');
 
 var singletonPlayer;
 var createPlayer = function (spec) {
@@ -23,6 +24,7 @@ var createPlayer = function (spec) {
   player.viewAngle = spec && spec.points ? spec.viewAngle : defaults.viewAngle;
   player.velocity = spec && spec.velocity ? spec.velocity : defaults.velocity;
   playerKeyHandler(player);
+  playerMouseHandler(player);
 
 
   // METHODS
@@ -44,9 +46,11 @@ var createPlayer = function (spec) {
     var b = rightVector.normalize().scale(player.movementDirection.x);
 
     player.movement = a.addVector(b);
+    //player.movement = player.movementDirection;
 
     // rotate player according to viewAngle
-    player.mesh.rotation.y = -player.viewAngle.yaw;
+    // TODO: do not use rotation
+    player.mesh.rotation.y = player.viewAngle.yaw;
 
     superUpdate(delta);
   };
@@ -57,6 +61,15 @@ var createPlayer = function (spec) {
     // mesh drawn as part of scene in Game.js
   };
 
+  player.updateViewAngles = function(yawD, pitchD) {
+    player.viewAngle.yaw += yawD;
+    player.viewAngle.pitch += pitchD;
+    player.viewAngle.restrict();
+  };
+
+  player.shoot = function() {
+
+  };
 
   return singletonPlayer = player;
 }

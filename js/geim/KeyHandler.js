@@ -1,7 +1,7 @@
-var movementSensitivity = 3;
-
 var createKeyHandler = function(player) {
-
+  'use strict';
+  
+  var movementSensitivity = 3;
   document.addEventListener('keydown', function(event) {
 
     switch(event.keyCode) {

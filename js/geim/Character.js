@@ -45,6 +45,7 @@ var createCharacter = function (spec) {
   };
 
 
+
   // HELPERS
   function updateMeshPosition(point, mesh) {
     mesh.position.x = point.x;

@@ -9,6 +9,11 @@ var player = createPlayer({
                        new THREE.MeshBasicMaterial({ wireframe: true }))
 });
 
+
+player.viewAngle.toVector().log();
+player.viewAngle.restrict();
+player.viewAngle.toVector().log();
+
 var ramdomSeedSize = 400;
 var characters = [
   player,
@@ -32,7 +37,7 @@ var characters = [
   })
 ];
 
-var container, camera, scene, renderer, line;
+var container, camera, scene, renderer, line, axes;
 
 init();
 gameLoop();
@@ -43,8 +48,14 @@ function init() {
                                        window.innerWidth / window.innerHeight,
                                        1, 1000);
   camera.position.y = 50;
+  camera.position.z = 100;
+
+  console.log('initial', camera.position.x, camera.position.y, camera.position.z);
 
   scene = new THREE.Scene();
+
+  axes = buildAxes( 1000 );
+  scene.add(axes);
 
   characters.forEach(function(char) {
     scene.add(char.mesh);
@@ -101,13 +112,24 @@ function gameLoop() {
 
 function update(delta) {
   // position camera
-  // Separate game logic to its own file
-  var v = player.viewAngle.toVector().scale(150);
-  var p = player.position.clone();
-  var i = p.addVector(v);
-  camera.position.z = i.z + 100;
-  camera.position.x = i.x;
-  camera.position.y = i.y + 50;
+  // Separate logic to its own file
+  var angle = player.viewAngle.clone();
+  //angle.yaw += Math.PI/2;
+  var v = angle.toVector().scale(200);
+  var playerPosition = player.position.clone();
+  var cameraPosition = playerPosition.addVector(v);
+  camera.position.x = cameraPosition.x + 0;
+  camera.position.y = cameraPosition.y + 50;
+  camera.position.z = cameraPosition.z + 100;
+
+  //camera.position.x = player.position.x;
+  //camera.position.y = player.position.y + 100;
+  //camera.position.z = player.position.z + 100;
+
+  //console.log('camera', camera.position.x, camera.position.y, camera.position.z);
+  //console.log('player', player.position.x, player.position.y, player.position.z);
+  //console.log('player', player.mesh.position.x, player.mesh.position.y, player.mesh.position.z);
+
   camera.lookAt(player.mesh.position);
 
   // update nose
@@ -136,29 +158,36 @@ function draw(delta) {
   renderer.render(scene, camera);
 }
 
-// move to MouseHandler
-var mouseSensitivity = 0.02, lastX = 0, lastY = 0;
-document.addEventListener('mousemove', function(event) {
-  if(lastX > 0 && lastY > 0 && mouseDown) {
-    var movedX = event.screenX - lastX;
-    var movedY = event.screenY - lastY;
+function buildAxes( length ) {
+  var axes = new THREE.Object3D();
 
-    // update player's view angle
-    player.viewAngle.pitch += movedY * mouseSensitivity;
-    player.viewAngle.yaw += movedX * mouseSensitivity;
-    player.viewAngle.restrict();
+  axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( length, 0, 0 ), 0xFF0000, false ) ); // +X
+  axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( -length, 0, 0 ), 0xFF0000, true) ); // -X
+  axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, length, 0 ), 0x00FF00, false ) ); // +Y
+  axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, -length, 0 ), 0x00FF00, true ) ); // -Y
+  axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, length ), 0x0000FF, false ) ); // +Z
+  axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -length ), 0x0000FF, true ) ); // -Z
 
-    //console.log('angles', player.viewAngle.pitch * (180/Math.PI), player.viewAngle.yaw * (180/Math.PI));
+  return axes;
+
+}
+
+function buildAxis( src, dst, colorHex, dashed ) {
+  var geom = new THREE.Geometry(),
+  mat;
+
+  if(dashed) {
+    mat = new THREE.LineDashedMaterial({ linewidth: 3, color: colorHex, dashSize: 3, gapSize: 3 });
+  } else {
+    mat = new THREE.LineBasicMaterial({ linewidth: 3, color: colorHex });
   }
-  lastX = event.screenX;
-  lastY = event.screenY;
-}, false);
 
-var mouseDown = false;
-document.addEventListener('mousedown', function(event) {
-  mouseDown = true;
-}, false);
+  geom.vertices.push( src.clone() );
+  geom.vertices.push( dst.clone() );
+  geom.computeLineDistances(); // This one is SUPER important, otherwise dashed lines will appear as simple plain lines
 
-document.addEventListener('mouseup', function(event) {
-  mouseDown = false;
-}, false);
+  var axis = new THREE.Line( geom, mat, THREE.LinePieces );
+
+  return axis;
+
+}

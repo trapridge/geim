@@ -79,9 +79,9 @@ var createVector = function(spec) {
 
   vector.normalize = function() {
     var magnitude = vector.magnitude();
-    vector.x / magnitude;
-    vector.y / magnitude;
-    vector.z / magnitude;
+    vector.x = vector.x / magnitude;
+    vector.y = vector.y / magnitude;
+    vector.z = vector.z / magnitude;
     return vector;
   };
 

@@ -20,9 +20,13 @@ var createEulerAngles = function(spec) {
   // METHODS
   eulerAngles.toVector = function() {
     return createVector({
-      x: Math.cos(eulerAngles.yaw) * Math.cos(eulerAngles.pitch),
+      //x: Math.cos(eulerAngles.yaw) * Math.cos(eulerAngles.pitch),
+      //y: Math.sin(eulerAngles.pitch),
+      //z: Math.sin(eulerAngles.yaw) * Math.cos(eulerAngles.pitch)
+      // note x and z switched as we rotation to be neutral along z axis by default
+      x: Math.sin(eulerAngles.yaw) * Math.cos(eulerAngles.pitch),
       y: Math.sin(eulerAngles.pitch),
-      z: Math.sin(eulerAngles.yaw) * Math.cos(eulerAngles.pitch)
+      z: Math.cos(eulerAngles.yaw) * Math.cos(eulerAngles.pitch)
     });
   };
 
@@ -47,6 +51,14 @@ var createEulerAngles = function(spec) {
     console.log('pitch', eulerAngles.pitch * 180/Math.PI);
     console.log('yaw', eulerAngles.yaw * 180/Math.PI);
     console.log('roll', eulerAngles.roll * 180/Math.PI);
+  };
+
+  eulerAngles.clone = function() {
+    return createEulerAngles({
+      pitch: eulerAngles.pitch,
+      yaw: eulerAngles.yaw,
+      roll: eulerAngles.roll
+    });
   };
 
   return eulerAngles;
